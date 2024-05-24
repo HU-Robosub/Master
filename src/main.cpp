@@ -1,18 +1,28 @@
-#include <Arduino.h>
+#include "Common.h"
+#include "Scanner.h"
+#include "MasterI2C.h"
 
-// put function declarations here:
-int myFunction(int, int);
+MasterI2C Master;
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  Serial.begin(9600);
+  while(!Serial)
+  {
+    delay(1000);
+  }
+  Serial.println("Initialized Serial");
+  Serial.println("Initializing I2C");
+  Master.begin();
+  Serial.println("Initialized I2C");
+
+
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  scan();
+  Serial.println("Scanning for I2C devices...");
+  Master.scanForSlaves();
+  Master.assignSlaveAddresses();
+  Master.communicateWithSlaves();
+  delay(5000); // Wait 5 seconds before next scan
 }
