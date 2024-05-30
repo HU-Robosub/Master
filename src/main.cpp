@@ -1,28 +1,60 @@
-#include "Common.h"
-#include "Scanner.h"
-#include "MasterI2C.h"
+#include <Arduino.h>
+#include <Wire.h>
+int readData = 77;
 
-MasterI2C Master;
+
+void sendRequest(int slave, int length, int reg) {
+  Serial.println("Sending a register byte!");
+
+  Wire.beginTransmission(slave);
+  Wire.write(reg);
+  Wire.endTransmission();
+
+  Serial.printf("Register byte sent: %d\n", reg);
+
+  Serial.println("Initiated a request!");
+  uint8_t a = Wire.requestFrom(slave, length);
+  Serial.println("Request sent!");
+  Serial.printf("Request status: %d\n", a);
+
+  while (Wire.available())
+  {
+    readData = Wire.read();
+    Serial.print("Data: ");
+    Serial.println(readData);
+  }
+  // byte answer[length];  // Declare an array to hold the received bytes
+
+  // int i = 0;
+  // while (Wire.available()) {    // While there are bytes available to read
+  //   answer[i++] = Wire.read();  // Read a byte and store it in the array
+  // }
+
+  // Serial.print("The answer: ");
+  // for (byte b : answer) {  // Loop over each byte in the array
+  //   Serial.print(b, DEC);  // Print the byte value in hexadecimal format
+  //   Serial.print(", ");   // Add a space between values for readability
+  // }
+  // Serial.println();
+}
 
 void setup() {
+  Wire.begin();
   Serial.begin(9600);
-  while(!Serial)
+  while (!Serial)
   {
-    delay(1000);
+    delay(3000);
   }
-  Serial.println("Initialized Serial");
-  Serial.println("Initializing I2C");
-  Master.begin();
-  Serial.println("Initialized I2C");
+  delay(2000);
 
 
+  Serial.println("Request processed!");
 }
 
 void loop() {
-  scan();
-  Serial.println("Scanning for I2C devices...");
-  Master.scanForSlaves();
-  Master.assignSlaveAddresses();
-  Master.communicateWithSlaves();
-  delay(5000); // Wait 5 seconds before next scan
+  sendRequest(5, 1, 0);
+  sendRequest(5, 1, 1);
+  Serial.println("");
+  // sendRequest(5, 1, 2);
+  delay(2000);
 }
