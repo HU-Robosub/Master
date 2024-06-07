@@ -3,5 +3,6 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+#include <vector>
 
 #endif // COMMON_H
